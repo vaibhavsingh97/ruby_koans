@@ -1,6 +1,6 @@
 require 'test/unit'
 
-def __
+def Test
   "FILL ME IN"
 end
 
