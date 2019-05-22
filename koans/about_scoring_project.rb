@@ -1,13 +1,13 @@
-require 'edgecase'
+require File.expand_path(File.dirname(__FILE__) + '/neo')
 
 # Greed is a dice game where you roll up to five dice to accumulate
-# points.  The following "score" function will be used calculate the
+# points.  The following "score" function will be used to calculate the
 # score of a single roll of the dice.
 #
 # A greed roll is scored as follows:
 #
 # * A set of three ones is 1000 points
-#   
+#
 # * A set of three numbers (other than ones) is worth 100 times the
 #   number. (e.g. three fives is 500 points).
 #
@@ -25,15 +25,42 @@ require 'edgecase'
 # score([3,4,5,3,3]) => 350 points
 # score([1,5,1,2,4]) => 250 points
 #
-# More scoing examples are given in the tests below:
+# More scoring examples are given in the tests below:
 #
 # Your goal is to write the score method.
 
 def score(dice)
-  # You need to write this method
+  result = 0
+  counts = Hash.new(0) 
+  
+  dice.each do |value|
+    counts[value] += 1
+  end
+  
+  counts.each do |key,value|
+    if key == 1 && value >= 3 then
+      result += 1000
+      value -= 3
+    end
+
+    if key != 1 && value >= 3 then
+      result += key * 100
+      value -= 3
+    end
+
+    if key == 1 && value <= 2 then 
+      result += 100 * value
+    end
+
+    if key == 5 && value <=2 then
+      result += 50 * value
+    end
+  end
+  
+  result
 end
 
-class AboutScoringAssignment < EdgeCase::Koan
+class AboutScoringProject < Neo::Koan
   def test_score_of_an_empty_list_is_zero
     assert_equal 0, score([])
   end
@@ -46,8 +73,8 @@ class AboutScoringAssignment < EdgeCase::Koan
     assert_equal 100, score([1])
   end
 
-  def test_score_of_mulitple_1s_and_5s_is_the_sum
-    assert_equal 200, score([1,5,5,1])
+  def test_score_of_multiple_1s_and_5s_is_the_sum_of_individual_scores
+    assert_equal 300, score([1,5,5,1])
   end
 
   def test_score_of_single_2s_3s_4s_and_6s_are_zero
@@ -69,6 +96,9 @@ class AboutScoringAssignment < EdgeCase::Koan
   def test_score_of_mixed_is_sum
     assert_equal 250, score([2,5,2,2,3])
     assert_equal 550, score([5,5,5,5])
+    assert_equal 1100, score([1,1,1,1])
+    assert_equal 1200, score([1,1,1,1,1])
+    assert_equal 1150, score([1,1,1,5,1])
   end
 
 end
